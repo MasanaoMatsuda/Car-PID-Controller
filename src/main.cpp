@@ -3,11 +3,18 @@
 #include <iostream>
 #include <string>
 #include "json.hpp"
-#include "PID.h"
+#include "pid.h"
+#include "twiddle.hpp"
+#include "controller.hpp"
 
 // for convenience
 using nlohmann::json;
 using std::string;
+
+static const double START_KP = 0.15;
+static const double START_KI = 0.0004;
+static const double START_KD = 3;
+
 
 // For converting back and forth between radians and degrees.
 constexpr double pi() { return M_PI; }
@@ -15,8 +22,6 @@ double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
 // Checks if the SocketIO event has JSON data.
-// If there is data the JSON object in string format will be returned,
-// else the empty string "" will be returned.
 string hasData(string s) {
   auto found_null = s.find("null");
   auto b1 = s.find_first_of("[");
@@ -30,15 +35,17 @@ string hasData(string s) {
   return "";
 }
 
+
+
 int main() {
   uWS::Hub h;
 
-  PID pid;
-  /**
-   * TODO: Initialize the pid variable.
-   */
+  PID pid(START_KP, START_KI, START_KD);
+  Twiddle twiddle(START_KP, START_KI, START_KD);
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
+  Controller ctr(pid, twiddle);
+
+  h.onMessage([&ctr](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -50,23 +57,16 @@ int main() {
         auto j = json::parse(s);
 
         string event = j[0].get<string>();
-
         if (event == "telemetry") {
           // j[1] is the data JSON object
           double cte = std::stod(j[1]["cte"].get<string>());
           double speed = std::stod(j[1]["speed"].get<string>());
           double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value;
-          /**
-           * TODO: Calculate steering value here, remember the steering value is
-           *   [-1, 1].
-           * NOTE: Feel free to play around with the throttle and speed.
-           *   Maybe use another PID controller to control the speed!
-           */
           
+          double steer_value = ctr.get_steering(cte);
+
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
-                    << std::endl;
+          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << " Steering Angle: " << angle << std::endl;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
