@@ -19,7 +19,7 @@ Twiddle::Twiddle(double Kp, double Ki, double Kd)
 Twiddle::~Twiddle()
 {}
 
-bool Twiddle::optimize(double cte)
+bool Twiddle::optimize(const double *cte)
 {
     accumulateError(cte);
 
@@ -29,19 +29,19 @@ bool Twiddle::optimize(double cte)
         total_cte = 0;
         accum_count = 0;
 
-        updateParams(avg_cte);
+        updateParams(&avg_cte);
         return true;
     }
     return false;
 }
 
-void Twiddle::accumulateError(double cte)
+void Twiddle::accumulateError(const double *cte)
 {
-    total_cte += fabs(cte);
+    total_cte += fabs(*cte);
     ++accum_count;
 }
 
-void Twiddle::updateParams(double cte)
+void Twiddle::updateParams(const double *cte)
 {
     if (twiddle_phase == 0)
     {
@@ -50,9 +50,9 @@ void Twiddle::updateParams(double cte)
     }
     else if (twiddle_phase == 1)
     {
-        if (cte < best_cte)
+        if (*cte < best_cte)
         {
-            best_cte = cte;
+            best_cte = *cte;
             param_ds[idx] *= 1.1;
             twiddle_phase = 0;
             ++idx;
@@ -65,9 +65,9 @@ void Twiddle::updateParams(double cte)
     }
     else if (twiddle_phase == 2)
     {
-        if (cte < best_cte)
+        if (*cte < best_cte)
         {
-            best_cte = cte;
+            best_cte = *cte;
             param_ds[idx] *= 1.1;
         }
         else

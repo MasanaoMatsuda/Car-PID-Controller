@@ -5,7 +5,7 @@
 #include <iostream>
 #include <numeric>  
 
-const int SAMPLE_SIZE = 100;
+const int SAMPLE_SIZE = 30;
 const int MIN_TORELANCE = 0.2;
 
 class Twiddle
@@ -13,10 +13,10 @@ class Twiddle
 public:
     Twiddle(double Kp, double Ki, double Kd);
     ~Twiddle();
-    bool optimize(double cte);
+    bool optimize(const double *cte);
 private:
-    void accumulateError(double cte);
-    void updateParams(double cte);
+    void accumulateError(const double *cte);
+    void updateParams(const double *cte);
     double getTolerance();
 public:
     std::vector<double> params; // p,i,d

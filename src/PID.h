@@ -6,10 +6,10 @@ class PID {
   PID(double Kp_, double Ki_, double Kd_);
   virtual ~PID();
   void Init(double Kp_, double Ki_, double Kd_);
-  void UpdateError(double cte);
+  void UpdateError(const double *cte);
   double TotalError();
 
- private:
+ protected:
   double p_error;
   double i_error;
   double d_error;

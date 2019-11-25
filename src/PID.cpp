@@ -19,10 +19,11 @@ void PID::Init(double Kp_, double Ki_, double Kd_)
   std::cout << "P: " << Kp << "\tI: " << Ki << "\tD: " << Kd << std::endl;
 }
 
-void PID::UpdateError(double cte) {
-  d_error = cte - p_error;
-  p_error = cte;
-  i_error += cte; 
+void PID::UpdateError(const double *cte) {
+  d_error = *cte - p_error;
+  p_error = *cte;
+  i_error += *cte;
+  //std::cout << *cte << " " << i_error << std::endl;
 }
 
 double PID::TotalError() {
