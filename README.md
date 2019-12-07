@@ -1,5 +1,6 @@
 # Car-PID-Controller
-This is a PID controller project. The PID's instruction is below.
+This is a PID controller project. There is PID instruction below.
+![result](https://github.com/MasanaoMatsuda/Car-PID-Controller/blob/media/gif/pid_running_straight.gif)
 
 ## The Effect each of the P,I,D components
 #### P
@@ -19,8 +20,6 @@ This is a PID controller project. The PID's instruction is below.
 ## How the final hyperparameters were chosen
 I tried manual tuning.  
 Firstly I tried to tune only P-controller to drive align a center of road. Secondly I tried to tune D-controller with tuned P-controller to drive well curve. Only P-controller is not enough to drive curving road. Then I added I-controller. But I felt it was hard because the integral of CTE increase easily so I multiply 0.001 to raw CTE value.
-![result](https://github.com/MasanaoMatsuda/Car-PID-Controller/blob/media/gif/pid_running_straight.gif)
-
 
 Only PID controller it is hard to handle steep curve. It is needed to control vehicle speed.
 ![result](https://github.com/MasanaoMatsuda/Car-PID-Controller/blob/media/gif/pid_running_curve.gif)
